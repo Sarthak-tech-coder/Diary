@@ -1,21 +1,13 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, SchemaType } from "mongoose";
 
 export interface UserInterface {
     Name: string,
     Email: string,
     Password: string,
     Auth: string,
-    Diarys: [{
-        _id: string,
-        Title: string,
-        SubTitle: string,
-        Date: {
-            Day: string,
-            Date: string,
-            Time: string,
-        },
-        Content: string,
-    }]
+    Diaries: [
+        type: unknown
+    ]
 }
 const UserSchema = new Schema<UserInterface>({
     Name: {
@@ -32,31 +24,10 @@ const UserSchema = new Schema<UserInterface>({
         default: "user",
         enum: ["user", "admin"]
     },
-    Diarys: [
+    Diaries: [
         {
-            _id: {
-                type: "string",
-            },
-            Title: {
-                type: 'string',
-            },
-            SubTitle: {
-                type: 'string',
-            },
-            Date: {
-                Day: {
-                    type: "string",
-                },
-                Date: {
-                    type: "string",
-                },
-                Time: {
-                    type: "string",
-                }
-            },
-            Content: {
-                type: "String",
-            }
+            type: Schema.Types.ObjectId,
+            ref: "Diary"
         }
     ]
 })
