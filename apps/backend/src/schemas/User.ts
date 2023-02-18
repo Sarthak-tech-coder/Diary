@@ -1,6 +1,8 @@
-import mongoose, { Schema, SchemaType } from "mongoose";
+import mongoose, { HydratedDocument, Model, Schema, SchemaType, Document } from "mongoose";
+import * as bcrypt from "bcryptjs"
+import paginate from 'mongoose-paginate-v2';
 
-export interface UserInterface {
+export interface UserInterface extends Document {
     Name: string,
     Email: string,
     Password: string,
@@ -9,8 +11,19 @@ export interface UserInterface {
         type: unknown
     ]
 }
-const UserSchema = new Schema<UserInterface>({
+interface UserInterfaceMethods {
+    ReturnAllDATA(): object,
+    Encode(): object
+}
+interface UserInterfaceModel extends Model<UserInterface, {}, UserInterfaceMethods> {
+    findAllUsers(): HydratedDocument<UserInterface, UserInterfaceMethods>
+}
+const UserSchema = new Schema<UserInterface, UserInterfaceModel>({
     Name: {
+        type: 'string',
+        required: true,
+    },
+    Password: {
         type: 'string',
         required: true,
     },
@@ -31,5 +44,19 @@ const UserSchema = new Schema<UserInterface>({
         }
     ]
 })
-const User = mongoose.model<UserInterface>("User", UserSchema)
+UserSchema.statics.findAllUsers = function () {
+    return this.find()
+}
+UserSchema.methods.ReturnAllDATA = function () {
+    return (this)
+}
+UserSchema.methods.Encode = function () {
+    var salt = bcrypt.genSaltSync(10);
+    this.Password = bcrypt.hashSync(this.Password, salt)
+    return (this)
+}
+
+UserSchema.plugin(paginate)
+const User = mongoose.model<UserInterface, UserInterfaceModel>("User", UserSchema)
+
 export { User as userSchema }

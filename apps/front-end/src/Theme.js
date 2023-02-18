@@ -21,7 +21,6 @@ export const ThemeSettings = (mode) => {
                         "other": "#04FF60",
                         "Title": "#00FFFF",
                         "Sdd": "#F8F8F8",
-
                     },
                     support: {
                         "scroll": "#0F6060",

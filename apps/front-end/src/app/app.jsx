@@ -13,6 +13,7 @@ import { selectAuth } from "../../Global/GlobalSlice";
 import View from "./components/Diary/View";
 import Edit from "./components/Diary/Edit";
 import { Navigate } from "react-router-dom";
+import Login from "./components/Login/Login";
 
 const ProtectedRoute = ({ children }) => {
   const user = useSelector(selectAuth);
@@ -27,6 +28,7 @@ const ProtectedRoute = ({ children }) => {
 export function App() {
   const mode = useSelector((state) => state.Global.mode);
   const theme = useMemo(() => createTheme(ThemeSettings(mode)), [mode]);
+  console.log(theme);
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
@@ -34,6 +36,7 @@ export function App() {
         <ProSidebarProvider>
           <Routes>
             <Route element={<Layout />}>
+              <Route path="Login" element={<Login />} />
               <Route path="/mydiary" element={<Home />}>
                 <Route path="/mydiary/View" element={<Main />}></Route>
                 <Route path="/mydiary/View/:id" element={<View />}></Route>

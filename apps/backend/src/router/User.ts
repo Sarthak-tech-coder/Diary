@@ -8,10 +8,10 @@ import { query, orderBy, limit } from "firebase/firestore";
 
 //import uniqueString from 'unique-string';
 const router = Router()
-router.get("/", (req: Request, res: Response) => {
+router.get("/", (req, res) => {
     res.json({ "message": "userAPI" })
 })
-router.all("/register", async (req: Request, res: Response) => {
+router.all("/register", async (req, res) => {
     const { Name, Password, Email } = req.query || req.body
     if (!Name || !Password || !Email) return res.status(400).json({ message: "failed" })
     const User = new userSchema({
@@ -29,7 +29,7 @@ router.all("/register", async (req: Request, res: Response) => {
             success: false,
             messgae: "registration failed successfully"
         })
-        console.log("\x1b[31m", "failed")
+        console.log(" x1b[31m", "failed")
     })
 })
 function makeid(length) {
@@ -56,10 +56,10 @@ function formatAMPM(date) {
 function getDay() {
     const Days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
     const today = new Date()
-    return Days[today.getDay()]
+    return Days[today.getDay() - 1]
 }
-router.post("/diary", async (req: Request, res: Response) => {
-    const { __id, Title, SubTitle, Content } = req.query || req.body
+router.post("/diary", async (req, res) => {
+    const { __id, Title, SubTitle, Content } = req.body
     const today = new Date()
     const day = today.getDate()
     const month = today.getMonth() + 1
@@ -78,6 +78,8 @@ router.post("/diary", async (req: Request, res: Response) => {
     })
     diary.save()
     userSchema.findById(__id).then((result) => {
+        if (result === null) return res.status(404).json({ message: "User not found" })
+        console.log(result)
         result.Diaries.push(diary._id)
         result.save()
         result.populate("Diaries").then((result) => {
@@ -87,7 +89,7 @@ router.post("/diary", async (req: Request, res: Response) => {
         })
     })
 })
-router.post("/form_Pgroup", async (req: Request, res: Response) => {
+router.post("/form_Pgroup", async (req, res) => {
     const Users = req.body.Users
     console.log(req.body)
     if (!Users) return res.status(500).json({ message: "failed" })
@@ -118,10 +120,33 @@ router.get("/chatroomid", (req, res) => {
     })
 })
 
-router.get("/getuser", (req: Request, res: Response) => {
+router.get("/getuser", (req, res) => {
     const { __id } = req.query || req.body
     userSchema.findById(__id).then((user) => {
         res.status(200).json(user)
+    })
+})
+router.get("/Alldiary", async (req, res) => {
+    const { __id } = req.query || req.body
+    if (!__id) return res.status(400).json({ status: "failed" })
+    userSchema.findById(__id).then((user) => {
+        user.populate("Diaries").then((result) => {
+            res.status(200).json(result)
+        })
+    })
+})
+router.get('/login', async (req, res) => {
+    const { Email, Password } = req.body
+    if (!Email || !Password) return res.status(400).json({ status: "failed" })
+    userSchema.find({ Email: Email }).then((user) => {
+        console.log(Password, user[0].Password, user)
+        if (user[0].Password === Password) {
+            user[0].populate("Diaries").then((user) => {
+                return res.status(200).json({ status: "success", data: user })
+            })
+        } else {
+            return res.status(401).json({ status: "failed" })
+        }
     })
 })
 export { router as UserRouter }
