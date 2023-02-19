@@ -4,13 +4,15 @@ import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 import { useTheme } from "@mui/material/styles";
-
+import { setUser } from "../../../../Global/GlobalSlice";
+import { useDispatch } from "react-redux";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setError] = useState(false);
   const [passwordError, setPError] = useState(false);
   const [logginError, setLogginError] = useState(false);
+  const Dispatch = useDispatch();
   const handlePassword = (e) => {
     setPassword(e.target.value);
   };
@@ -38,7 +40,6 @@ export default function Login() {
     ) {
       return;
     } else {
-      console.log("Success");
       axios({
         method: "POST",
         url: "http://127.0.0.1:9000/UserAPI/login",
@@ -48,15 +49,10 @@ export default function Login() {
         },
       })
         .then((res) => {
-          delete res.data.result.Password;
-          console.log(res.data.result);
-          setLogginError(false);
-          Dispatch(setUser(res.data.result));
-          Dispatch(ChangeAuthStatus(true));
-          Navigate("/dashboard");
+          delete res.data.data.Password;
+          Dispatch(setUser(res.data.data));
         })
         .catch((e) => {
-          console.log(e);
           setLogginError(true);
         });
     }
@@ -105,6 +101,7 @@ export default function Login() {
           <TextField
             label="Email"
             variant="filled"
+            error={emailError}
             fullWidth
             color="color"
             sx={{
@@ -115,6 +112,7 @@ export default function Login() {
           <TextField
             label="Password"
             variant="filled"
+            error={passwordError}
             fullWidth
             color="color"
             type="Password"

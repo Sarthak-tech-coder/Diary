@@ -3,7 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const initial_State = {
     mode: "dark",
     isAuth: false,
-    user: {},
+    user: {
+        Diaries: [],
+    },
     active: ""
 }
 
@@ -40,6 +42,12 @@ export const selectAuth = (state) => {
 }
 export const selectUser = (state) => {
     return state.Global.user
+}
+export const selectDiaries = (state) => {
+    return state.Global.user.Diaries
+}
+export const selectDiarie = (id) => (state) => {
+    return state.Global.user.Diaries.filter(d => d._id === id)
 }
 export const GlobalReducer = GlobalSlice.reducer
 export const { ToggleMode, ChangeAuthStatus, changeActive, setUser } = GlobalSlice.actions

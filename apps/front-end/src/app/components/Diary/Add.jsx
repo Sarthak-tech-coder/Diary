@@ -1,10 +1,74 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
 import { Button, Typography } from "@mui/material";
+import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { selectUser, setUser } from "../../../../Global/GlobalSlice";
+function getDay() {
+  const Days = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ];
+  const today = new Date();
+  return Days[today.getDay() - 1];
+}
+function formatAMPM(date) {
+  let hours = date.getHours();
+  let minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "pm" : "am";
+  hours = hours % 12;
+  hours = hours ? hours : 12;
+  minutes = minutes < 10 ? "0" + minutes : minutes;
+  const strTime = hours + ":" + minutes + " " + ampm;
+  return strTime;
+}
 export default function Add() {
+  const Dispatch = useDispatch();
   const Theme = useTheme();
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.getMonth() + 1;
+  const year = today.getFullYear();
+  const date = `${day}/${month}/${year}`;
+  const [Title, setTitle] = useState("");
+  const [SubTitle, setSubTitle] = useState("");
+  const [Content, setContent] = useState("");
+  const User = useSelector(selectUser);
+
+  const HandleChangeTitle = (e) => {
+    setTitle(e.target.value);
+  };
+  const HandleChangeSubTitle = (e) => {
+    setSubTitle(e.target.value);
+  };
+  const HandleChangeContent = (e) => {
+    setContent(e.target.value);
+  };
+  const HandleSubmit = () => {
+    console.log(`Submit`);
+    if (Title !== "" && SubTitle !== "") {
+      axios({
+        method: "POST",
+        url: "http://localhost:9000/UserAPI/diary",
+        data: {
+          __id: User._id,
+          Title: Title,
+          SubTitle: SubTitle,
+          Content: Content,
+        },
+      }).then((result) => {
+        delete result.data.data.Password;
+        Dispatch(setUser(result.data.data));
+      });
+    }
+  };
   return (
     <Box
       sx={{
@@ -52,6 +116,8 @@ export default function Add() {
             </Typography>
             <TextField
               color="color"
+              value={Title}
+              onChange={HandleChangeTitle}
               sx={{
                 backgroundColor: Theme.palette.support.shade,
                 color: Theme.palette.Text.Title,
@@ -103,6 +169,8 @@ export default function Add() {
             </Typography>
             <TextField
               color="color"
+              value={SubTitle}
+              onChange={HandleChangeSubTitle}
               sx={{
                 backgroundColor: Theme.palette.support.shade,
                 color: Theme.palette.Text.Title,
@@ -141,6 +209,8 @@ export default function Add() {
         <TextField
           id="outlined-multiline-static"
           multiline
+          value={Content}
+          onChange={HandleChangeContent}
           rows={14}
           color={"color"}
           sx={{
@@ -184,6 +254,7 @@ export default function Add() {
                 font: "Montserrat",
               },
             }}
+            onClick={() => HandleSubmit()}
           >
             Save
           </Button>

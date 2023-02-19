@@ -1,13 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
+import { selectDiarie } from "../../../../Global/GlobalSlice";
+import { useSelector } from "react-redux";
 export default function View() {
   const Theme = useTheme();
   const { id } = useParams();
+  const Diary = useSelector(selectDiarie(id))[0];
   const Navigate = useNavigate();
+  useEffect(() => {}, []);
   return (
     <Box
       sx={{
@@ -50,14 +54,14 @@ export default function View() {
             >
               Title:
             </Typography>
-            <Typography variant="h3">Dummy Title</Typography>
+            <Typography variant="h3">{Diary.Title}</Typography>
           </div>
           <Typography
             variant="h3"
             alignItems={"center"}
             color={Theme.palette.Text.Title}
           >
-            DATE, DAY
+            {Diary.Date.Date}, {Diary.Date.Day}
           </Typography>
         </Box>
         <Box
@@ -88,7 +92,7 @@ export default function View() {
             >
               SubTitle:
             </Typography>
-            <Typography variant="h3">Dummy Sub Title</Typography>
+            <Typography variant="h3">{Diary.SubTitle}</Typography>
           </div>
           <Typography
             variant="h3"
@@ -96,7 +100,7 @@ export default function View() {
             color={Theme.palette.Text.Title}
             display="flex"
           >
-            1:32 AM
+            {Diary.Date.Time}
           </Typography>
         </Box>
         <Box
@@ -121,9 +125,7 @@ export default function View() {
           InputProps={{
             readOnly: true,
           }}
-          value={
-            "Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum has been the industry standard dummy text ever since the1500s, when an unknown printer took a galley of type and scrambled it tomake a type specimen book. It has survived not only five centuries, butalso the leap into electronic typesetting, remaining essentiallyunchanged. It was popularised in the 1960s with the release of Letrasetsheets containing Lorem Ipsum passages, and more recently with desktoppublishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum has been the industry standard dummy text ever since the1500s, when an unknown printer took a galley of type and scrambled it tomake a type specimen book. It has survived not only five centuries, butalso the leap into electronic typesetting, remaining essentiallyunchanged. It was popularised in the 1960s with the release of Letrasetsheets containing Lorem Ipsum passages, and more recently with desktoppublishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum has been the industry standard dummy text ever since the1500s, when an unknown printer took a galley of type and scrambled it tomake a type specimen book. It has survived not only five centuries, butalso the leap into electronic typesetting, remaining essentiallyunchanged. It was popularised in the 1960s with the release of Letrasetsheets containing Lorem Ipsum passages, and more recently with desktoppublishing software like Aldus PageMaker including versions of Lorem Ipsum. Lorem Ipsum is simply dummy text of the printing and typesetting industry.Lorem Ipsum has been the industry standard dummy text ever since the1500s, when an unknown printer took a galley of type and scrambled it tomake a type specimen book. It has survived not only five centuries, butalso the leap into electronic typesetting, remaining essentiallyunchanged. It was popularised in the 1960s with the release of Letrasetsheets containing Lorem Ipsum passages, and more recently with desktoppublishing software like Aldus PageMaker including versions of Lorem Ipsum."
-          }
+          value={Diary.Content}
           color={"color"}
           sx={{
             backgroundColor: Theme.palette.support.shade,

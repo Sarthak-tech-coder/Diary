@@ -4,6 +4,8 @@ interface Diary {
     User: object,
     Title: string,
     SubTitle: string,
+    isImportant: boolean,
+    isProtected: boolean,
     Date: {
         Day: string,
         Date: string,
@@ -21,6 +23,12 @@ const DiarySchema = new Schema<Diary>({
     },
     SubTitle: {
         type: "string"
+    },
+    isImportant: {
+        type: "boolean"
+    },
+    isProtected: {
+        type: "boolean"
     },
     Date: {
         Day: {

@@ -48,7 +48,7 @@ function formatAMPM(date) {
     let minutes = date.getMinutes();
     const ampm = hours >= 12 ? 'pm' : 'am';
     hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
+    hours = hours ? hours : 12;
     minutes = minutes < 10 ? '0' + minutes : minutes;
     const strTime = hours + ':' + minutes + ' ' + ampm;
     return strTime;
@@ -59,6 +59,7 @@ function getDay() {
     return Days[today.getDay() - 1]
 }
 router.post("/diary", async (req, res) => {
+    console.log("requesting post diary")
     const { __id, Title, SubTitle, Content } = req.body
     const today = new Date()
     const day = today.getDate()
@@ -76,13 +77,14 @@ router.post("/diary", async (req, res) => {
         },
         Content: Content
     })
-    diary.save()
-    userSchema.findById(__id).then((result) => {
+    userSchema.findById(__id).then(async (result) => {
         if (result === null) return res.status(404).json({ message: "User not found" })
-        console.log(result)
+        await diary.save()
         result.Diaries.push(diary._id)
-        result.save()
+        await result.save()
+        console.log(result)
         result.populate("Diaries").then((result) => {
+            console.log(result)
             res.status(200).json({
                 data: result
             })
@@ -135,13 +137,15 @@ router.get("/Alldiary", async (req, res) => {
         })
     })
 })
-router.get('/login', async (req, res) => {
+router.post('/login', async (req, res) => {
     const { Email, Password } = req.body
     if (!Email || !Password) return res.status(400).json({ status: "failed" })
     userSchema.find({ Email: Email }).then((user) => {
+        if (user.length == 0) return res.status(404).json({ status: "Failed" })
         console.log(Password, user[0].Password, user)
         if (user[0].Password === Password) {
             user[0].populate("Diaries").then((user) => {
+                console.log("Authenticated")
                 return res.status(200).json({ status: "success", data: user })
             })
         } else {

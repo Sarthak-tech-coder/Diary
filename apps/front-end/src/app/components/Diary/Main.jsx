@@ -3,8 +3,27 @@ import { Box } from "@mui/system";
 import { useTheme } from "@mui/material/styles";
 import ListItem from "./ListItem";
 import { Typography, Button } from "@mui/material";
+import { useSelector } from "react-redux";
+import { selectDiaries } from "../../../../Global/GlobalSlice";
 export default function Main() {
   const Theme = useTheme();
+  const diaries = useSelector(selectDiaries);
+  console.log(diaries);
+  function LoopEntries(diaries) {
+    const array = [];
+    for (var i in diaries) {
+      array.push(
+        <ListItem
+          SubTitle={diaries[i].SubTitle}
+          Title={diaries[i].Title}
+          isImportant={diaries[i].isImportant}
+          isProtected={diaries[i].isProtected}
+          id={diaries[i]._id}
+        />
+      );
+    }
+    return array;
+  }
   return (
     <Box
       sx={{
@@ -36,49 +55,7 @@ export default function Main() {
           },
         }}
       >
-        <ListItem
-          Title={"Title (Important)"}
-          SubTitle="Subtitle (Important)"
-          isImportant={true}
-          isProtected={true}
-          id={12}
-        />
-        <ListItem
-          Title={"Title"}
-          SubTitle="Subtitle"
-          isImportant={false}
-          isProtected={false}
-        />
-        <ListItem
-          Title={"Title"}
-          SubTitle="Subtitle"
-          isImportant={false}
-          isProtected={false}
-        />
-        <ListItem
-          Title={"Title"}
-          SubTitle="Subtitle"
-          isImportant={false}
-          isProtected={false}
-        />
-        <ListItem
-          Title={"Title"}
-          SubTitle="Subtitle"
-          isImportant={false}
-          isProtected={false}
-        />
-        <ListItem
-          Title={"Title"}
-          SubTitle="Subtitle"
-          isImportant={false}
-          isProtected={false}
-        />
-        <ListItem
-          Title={"Title"}
-          SubTitle="Subtitle"
-          isImportant={false}
-          isProtected={false}
-        />
+        {LoopEntries(diaries)}
       </Box>
     </Box>
   );
