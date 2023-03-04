@@ -14,6 +14,7 @@ import View from "./components/Diary/View";
 import Edit from "./components/Diary/Edit";
 import { Navigate } from "react-router-dom";
 import Login from "./components/Login/Login";
+import Password from "./components/Diary/Password";
 
 const ProtectedRoute = ({ children }) => {
   const user = useSelector(selectAuth);
@@ -38,8 +39,9 @@ export function App() {
             <Route element={<Layout />}>
               <Route path="Login" element={<Login />} />
               <Route path="/mydiary" element={<Home />}>
-                <Route path="/mydiary/View" element={<Main />}></Route>
-                <Route path="/mydiary/View/:id" element={<View />}></Route>
+                <Route path="/mydiary/All" element={<Main />}></Route>
+                <Route path="/mydiary/Password" element={<Password />}></Route>
+                <Route path="/mydiary/View/" element={<View />}></Route>
                 <Route path="/mydiary/Edit/:id" element={<Edit />}></Route>
                 <Route path="/mydiary/add" element={<Add />}></Route>
               </Route>

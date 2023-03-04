@@ -7,6 +7,7 @@ export interface UserInterface extends Document {
     Email: string,
     Password: string,
     Auth: string,
+    isConnected: boolean,
     Diaries: [
         type: unknown
     ]
@@ -26,6 +27,10 @@ const UserSchema = new Schema<UserInterface, UserInterfaceModel>({
     Password: {
         type: 'string',
         required: true,
+    },
+    isConnected: {
+        type: 'boolean',
+        default: false
     },
     Email: {
         type: 'string',

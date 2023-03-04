@@ -54,13 +54,13 @@ function formatAMPM(date) {
     return strTime;
 }
 function getDay() {
-    const Days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+    const Days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday",]
     const today = new Date()
-    return Days[today.getDay() - 1]
+    return Days[today.getDay()]
 }
 router.post("/diary", async (req, res) => {
     console.log("requesting post diary")
-    const { __id, Title, SubTitle, Content } = req.body
+    const { __id, Title, SubTitle, Content, isImportant, isProtected } = req.body
     const today = new Date()
     const day = today.getDate()
     const month = today.getMonth() + 1
@@ -75,11 +75,17 @@ router.post("/diary", async (req, res) => {
             Day: getDay(),
             Time: formatAMPM(new Date()),
         },
-        Content: Content
+        Content: Content,
+        isProtected: isProtected,
+        isImportant: isImportant
     })
     userSchema.findById(__id).then(async (result) => {
         if (result === null) return res.status(404).json({ message: "User not found" })
         await diary.save()
+        if (result.Diaries === undefined) {
+            //@ts-ignore
+            result.Diaries = []
+        }
         result.Diaries.push(diary._id)
         await result.save()
         console.log(result)
@@ -151,6 +157,27 @@ router.post('/login', async (req, res) => {
         } else {
             return res.status(401).json({ status: "failed" })
         }
+    })
+})
+router.delete("/diary", async (req, res) => {
+    const { _id } = req.body
+    if (!_id) return res.status(400).json({ status: "failed" })
+    DiarySchema.findByIdAndDelete(_id).then((result) => {
+        userSchema.findById(result.User).then((result) => {
+            // @ts-ignore
+            result.Diaries = result.Diaries.filter(d => d != _id)
+            result.populate("Diaries").then((result) => {
+                res.status(200).json({ status: "success", data: result })
+            })
+        })
+    })
+})
+router.post("connect", (req, res) => {
+    const { _id } = req.body
+    if (!_id) return res.status(400).json({ status: "failed" })
+    userSchema.findById(_id).then((result) => {
+        result.isConnected = true
+        result.save()
     })
 })
 export { router as UserRouter }

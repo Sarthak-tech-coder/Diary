@@ -3,21 +3,26 @@ import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
 import { Button, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
+import Checkbox from "@mui/material/Checkbox";
 import { selectUser, setUser } from "../../../../Global/GlobalSlice";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+
 function getDay() {
   const Days = [
+    "sunday",
     "monday",
     "tuesday",
     "wednesday",
     "thursday",
     "friday",
     "saturday",
-    "sunday",
   ];
   const today = new Date();
-  return Days[today.getDay() - 1];
+  return Days[today.getDay()];
 }
 function formatAMPM(date) {
   let hours = date.getHours();
@@ -30,6 +35,7 @@ function formatAMPM(date) {
   return strTime;
 }
 export default function Add() {
+  const Navigate = useNavigate();
   const Dispatch = useDispatch();
   const Theme = useTheme();
   const today = new Date();
@@ -41,7 +47,16 @@ export default function Add() {
   const [SubTitle, setSubTitle] = useState("");
   const [Content, setContent] = useState("");
   const User = useSelector(selectUser);
+  const [Protected, setProtected] = useState(false);
 
+  const handleProtected = (event) => {
+    setProtected(event.target.checked);
+  };
+  const [Important, setImportant] = useState(false);
+
+  const handleImportant = (event) => {
+    setImportant(event.target.checked);
+  };
   const HandleChangeTitle = (e) => {
     setTitle(e.target.value);
   };
@@ -52,7 +67,6 @@ export default function Add() {
     setContent(e.target.value);
   };
   const HandleSubmit = () => {
-    console.log(`Submit`);
     if (Title !== "" && SubTitle !== "") {
       axios({
         method: "POST",
@@ -62,10 +76,13 @@ export default function Add() {
           Title: Title,
           SubTitle: SubTitle,
           Content: Content,
+          isProtected: Protected,
+          isImportant: Important,
         },
       }).then((result) => {
         delete result.data.data.Password;
         Dispatch(setUser(result.data.data));
+        Navigate("/mydiary/all");
       });
     }
   };
@@ -135,7 +152,7 @@ export default function Add() {
             alignItems={"center"}
             color={Theme.palette.Text.Title}
           >
-            3rd Feb 2023, Wednesday
+            {date}, {getDay()}
           </Typography>
         </Box>
         <Box
@@ -189,7 +206,7 @@ export default function Add() {
             color={Theme.palette.Text.Title}
             display="flex"
           >
-            1:32 AM
+            {formatAMPM(new Date())}
           </Typography>
         </Box>
         <Box
@@ -211,7 +228,7 @@ export default function Add() {
           multiline
           value={Content}
           onChange={HandleChangeContent}
-          rows={14}
+          rows={12}
           color={"color"}
           sx={{
             backgroundColor: Theme.palette.support.shade,
@@ -241,6 +258,43 @@ export default function Add() {
             },
           }}
         />
+        <FormGroup
+          sx={{
+            display: "flex",
+            flexDirection: "row !important",
+          }}
+        >
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={Protected}
+                onChange={handleProtected}
+                sx={{
+                  color: Theme.palette.secondary["main"],
+                  "&.Mui-checked": {
+                    color: Theme.palette.Text.Title,
+                  },
+                }}
+              />
+            }
+            label="Protected"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={Important}
+                onChange={handleImportant}
+                sx={{
+                  color: Theme.palette.secondary["main"],
+                  "&.Mui-checked": {
+                    color: Theme.palette.Text.Title,
+                  },
+                }}
+              />
+            }
+            label="Important"
+          />
+        </FormGroup>
         <Box display="flex" justifyContent={"space-around"}>
           <Button
             variant="contained"

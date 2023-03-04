@@ -19,6 +19,7 @@ export default function Main() {
           isImportant={diaries[i].isImportant}
           isProtected={diaries[i].isProtected}
           id={diaries[i]._id}
+          Date={diaries[i].Date.Date}
         />
       );
     }

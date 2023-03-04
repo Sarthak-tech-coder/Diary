@@ -9,14 +9,17 @@ export default function ListItem({
   isProtected,
   isImportant,
   id,
+  Date,
 }) {
   const Theme = useTheme();
   const Navigate = useNavigate();
   return (
     <Box
       onClick={() => {
-        if (id !== undefined) {
-          Navigate(`/mydiary/view/${id}`);
+        if (id !== undefined && isProtected !== true) {
+          Navigate(`/mydiary/view/`, { state: { id: id } });
+        } else if (isProtected === true) {
+          Navigate("/mydiary/Password", { state: { id: id } });
         }
       }}
       style={{
@@ -30,29 +33,65 @@ export default function ListItem({
         cursor: " pointer",
       }}
     >
-      <div>
-        <Typography
-          variant="h3"
-          sx={{
-            color:
-              isImportant === true
-                ? Theme.palette.Text.other
-                : Theme.palette.Text.main,
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        <div
+          style={{
+            marginRight: "20px",
           }}
         >
-          {Title}
-        </Typography>
-        <Typography
-          sx={{
-            color:
-              isImportant === true
-                ? Theme.palette.Text.other
-                : Theme.palette.Text.main,
-            opacity: 0.8,
-          }}
-        >
-          {SubTitle}
-        </Typography>
+          <Typography
+            variant="h3"
+            sx={{
+              color:
+                isImportant === true
+                  ? Theme.palette.Text.other
+                  : Theme.palette.Text.main,
+            }}
+          >
+            {Title}
+          </Typography>
+          <Typography
+            sx={{
+              color:
+                isImportant === true
+                  ? Theme.palette.Text.other
+                  : Theme.palette.Text.main,
+              opacity: 0.8,
+            }}
+          >
+            {SubTitle}
+          </Typography>
+        </div>
+        <div>
+          <Typography
+            sx={{
+              color:
+                isImportant === true
+                  ? Theme.palette.Text.other
+                  : Theme.palette.Text.main,
+              opacity: 0.8,
+            }}
+          >
+            {Date}
+          </Typography>
+          <Typography
+            sx={{
+              color:
+                isImportant === true
+                  ? Theme.palette.Text.other
+                  : Theme.palette.Text.main,
+              opacity: 0.8,
+            }}
+          >
+            {isProtected === true ? "Protected" : ""}
+          </Typography>
+        </div>
       </div>
       {isImportant === true ? (
         <span

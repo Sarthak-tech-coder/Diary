@@ -92,7 +92,7 @@ function Layout() {
             <Item
               text="My Diary"
               icon={<ArticleIcon />}
-              to="/mydiary/view"
+              to="/mydiary/all"
               variant="h5"
             />
             <Item

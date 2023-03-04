@@ -4,12 +4,14 @@ import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
 import { useTheme } from "@mui/material/styles";
-import { setUser } from "../../../../Global/GlobalSlice";
+import { setUser, ChangeAuthStatus } from "../../../../Global/GlobalSlice";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setError] = useState(false);
+  const Navigate = useNavigate();
   const [passwordError, setPError] = useState(false);
   const [logginError, setLogginError] = useState(false);
   const Dispatch = useDispatch();
@@ -51,6 +53,8 @@ export default function Login() {
         .then((res) => {
           delete res.data.data.Password;
           Dispatch(setUser(res.data.data));
+          Dispatch(ChangeAuthStatus());
+          Navigate("/mydiary/all");
         })
         .catch((e) => {
           setLogginError(true);

@@ -1,17 +1,46 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
 import { selectDiarie } from "../../../../Global/GlobalSlice";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import { setUser } from "../../../../Global/GlobalSlice";
+import { useDispatch } from "react-redux";
 export default function View() {
   const Theme = useTheme();
-  const { id } = useParams();
+  const Location = useLocation();
+  const id = Location.state.id;
   const Diary = useSelector(selectDiarie(id))[0];
   const Navigate = useNavigate();
-  useEffect(() => {}, []);
+  const Dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const handleopen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleDelete = () => {
+    axios({
+      method: "DELETE",
+      url: "http://localhost:9000/UserApi/diary",
+      data: {
+        _id: id,
+      },
+    }).then((response) => {
+      Dispatch(setUser(response.data.data));
+    });
+    setOpen(false);
+    Navigate("/mydiary/all");
+  };
   return (
     <Box
       sx={{
@@ -183,9 +212,46 @@ export default function View() {
                 font: "Montserrat",
               },
             }}
+            onClick={() => handleopen()}
           >
             Delete
           </Button>
+          <Box>
+            <Dialog open={open} onClose={handleClose}>
+              <DialogTitle>Confirm</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Are you sure you want to delete this Entry?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-around",
+                    width: "100%",
+                  }}
+                >
+                  <Button
+                    onClick={handleClose}
+                    sx={{
+                      color: Theme.palette.support.save,
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleDelete}
+                    sx={{
+                      color: Theme.palette.support.Reject,
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </DialogActions>
+            </Dialog>
+          </Box>
         </Box>
       </Box>
     </Box>

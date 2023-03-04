@@ -6,10 +6,9 @@ import QRCode from 'qrcode'
 Dotenv.config()
 const router = Router()
 
-router.get("/MFAQR", (req: Request, res: Response) => {
-    const { user } = req.query || req.body
-    const out = authenticator.keyuri(user, "My diary", process.env.QR_SECRET_KEY)
-    if (!user) return res.status(500).json({ message: "user not found" })
+router.post("/MFAQR", (req: Request, res: Response) => {
+    const out = authenticator.keyuri("user", "My diary", process.env.QR_SECRET_KEY)
+
     QRCode.toDataURL(out, (err: unknown, DATA: string) => {
         if (err) return res.status(500).json({ error: err })
         const regex = /^data:.+\/(.+);base64,(.*)$/;
@@ -25,10 +24,10 @@ router.get("/MFAQR", (req: Request, res: Response) => {
     })
 })
 router.post("/verify", (req: Request, res: Response) => {
-    const { Token } = req.query || req.body
-    console.log(Token)
+    const { Token } = req.body
     if (!Token) return res.status(500).json({ message: "token not found" })
     const isvalid = authenticator.check(Token, process.env.QR_SECRET_KEY)
-    res.json({ isValid: isvalid })
+    if (isvalid === true) { return res.status(200).json({ message: isvalid }) }
+    else { return res.status(400).json({ message: isvalid }) }
 })
 export { router as MFARouter }
