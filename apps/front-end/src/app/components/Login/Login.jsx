@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Button, Typography } from "@mui/material";
+import { baseUrl } from "../Layout";
 import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import axios from "axios";
@@ -8,6 +9,7 @@ import { setUser, ChangeAuthStatus } from "../../../../Global/GlobalSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 export default function Login() {
+  const Url = useContext(baseUrl);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setError] = useState(false);
@@ -44,7 +46,7 @@ export default function Login() {
     } else {
       axios({
         method: "POST",
-        url: "http://127.0.0.1:9000/UserAPI/login",
+        url: `${Url}/UserAPI/login`,
         data: {
           Email: email,
           Password: password,

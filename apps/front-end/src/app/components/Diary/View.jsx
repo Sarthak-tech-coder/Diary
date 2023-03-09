@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
@@ -7,6 +7,7 @@ import { Button, Typography } from "@mui/material";
 import { selectDiarie } from "../../../../Global/GlobalSlice";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { baseUrl } from "../Layout";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -17,6 +18,7 @@ import { useDispatch } from "react-redux";
 export default function View() {
   const Theme = useTheme();
   const Location = useLocation();
+  const Url = useContext(baseUrl);
   const id = Location.state.id;
   const Diary = useSelector(selectDiarie(id))[0];
   const Navigate = useNavigate();
@@ -31,7 +33,7 @@ export default function View() {
   const handleDelete = () => {
     axios({
       method: "DELETE",
-      url: "http://localhost:9000/UserApi/diary",
+      url: `${Url}/UserApi/diary`,
       data: {
         _id: id,
       },

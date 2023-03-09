@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
@@ -12,8 +12,10 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import { baseUrl } from "../Layout";
 export default function Edit() {
   const Theme = useTheme();
+  const Url = useContext(baseUrl);
   const Navigate = useNavigate();
   const Dispatch = useDispatch();
   const location = useLocation();
@@ -51,7 +53,7 @@ export default function Edit() {
     } else {
       axios({
         method: "POST",
-        url: "http://localhost:9000/UserAPI/UpdateDiary",
+        url: `${Url}/UserAPI/UpdateDiary`,
         data: {
           id: Diary._id,
           diary: {

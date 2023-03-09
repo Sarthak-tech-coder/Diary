@@ -27,7 +27,7 @@ mongoose.set('strictQuery', false)
 
 mongoose.connect(process.env.MONGOOSE_CONNECTION_STRING).then(() => {
   app.listen(port, () => {
-    console.log(`Listening at http://localhost:${port}/api, connected successfully to database`);
+    console.log(`Listening at ${location.hostname}:${port}/api, connected successfully to database`);
   }).on('error', console.error);
 }).catch(() => {
   console.log("Connection failed, server terminated")

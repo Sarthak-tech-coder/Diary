@@ -29,6 +29,7 @@ import ArticleIcon from "@mui/icons-material/Article";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import SettingsIcon from "@mui/icons-material/Settings";
 export const collapsedContext = createContext();
+export const baseUrl = createContext();
 function CheckActive(to, pathname, text) {
   const location = useLocation();
   if (to !== undefined) {
@@ -41,6 +42,7 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 function Layout() {
+  console.log(process.env.NODE_ENV);
   const { collapseSidebar } = useProSidebar();
   const Theme = useTheme();
   const AuthStatue = useSelector(selectAuth);
@@ -148,12 +150,11 @@ function Layout() {
                   <hr className="line" />
                   <Item text="Home" icon={<HomeIcon />} to="/Home" />
                   <SubMenu
-                    label="Diary"
+                    label={<Typography variant="h4">"Diary"</Typography>}
                     onClick={() => SetopenDiary(!openDiary)}
                     open={openDiary}
                     icon={<LibraryBooksIcon />}
                     id="submenuColor"
-                    className="MuiTypography-root MuiTypography-h4 css-1dofcof-MuiTypography-root "
                   >
                     <Item
                       text="My Diary"
@@ -176,11 +177,10 @@ function Layout() {
                   <hr className="line" />
 
                   <SubMenu
-                    label="Settings"
+                    label={<Typography variant="h4">Settings</Typography>}
                     onClick={() => Setopen(!open)}
                     open={open}
                     id="submenuColor"
-                    className="MuiTypography-root MuiTypography-h4 css-1dofcof-MuiTypography-root submenuColor"
                     icon={<SettingsIcon />}
                   >
                     <Item
@@ -222,14 +222,22 @@ function Layout() {
           height: "100vh",
         }}
       >
-        <collapsedContext.Provider value={collapsed}>
-          <Outlet
-            style={{
-              width: "100%",
-              height: "100vh",
-            }}
-          />
-        </collapsedContext.Provider>
+        <baseUrl.Provider
+          value={
+            process.env.NODE_ENV === "production"
+              ? "https://diarybackend.onrender.com"
+              : "http://localhost:9000"
+          }
+        >
+          <collapsedContext.Provider value={collapsed}>
+            <Outlet
+              style={{
+                width: "100%",
+                height: "100vh",
+              }}
+            />
+          </collapsedContext.Provider>
+        </baseUrl.Provider>
       </div>
     </Box>
   );

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { Box } from "@mui/system";
+import { baseUrl } from "../Layout";
 import { Button, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
@@ -10,7 +11,8 @@ import axios from "axios";
 export default function Password() {
   const Navigate = useNavigate();
   const User = useSelector(selectUser);
-  const Secret = User.Token;
+  const Url = useContext(baseUrl);
+
   let location = useLocation();
   const Theme = useTheme();
   const id = location.state.id;
@@ -19,7 +21,7 @@ export default function Password() {
     if (OTP.length === 6) {
       axios({
         method: "POST",
-        url: "http://localhost:9000/MFAPI/verify",
+        url: `${Url}/MFAPI/verify`,
         data: {
           Token: OTP,
           Secret: User.Token,

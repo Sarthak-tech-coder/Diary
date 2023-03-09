@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { collapsedContext } from "../Layout";
+import { baseUrl } from "../Layout";
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
@@ -18,7 +18,7 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 function SignUp() {
-  const collapsed = useContext(collapsedContext);
+  const Url = useContext(baseUrl);
   const Dispatch = useDispatch();
   const Navigate = useNavigate();
   const Theme = useTheme();
@@ -106,7 +106,7 @@ function SignUp() {
       console.log("requesting");
       const request = axios({
         method: "POST",
-        url: "http://localhost:9000/userAPI/register",
+        url: `${Url}/userAPI/register`,
         data: {
           Name: UserName,
           Email: Email,

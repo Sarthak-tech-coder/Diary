@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Box } from "@mui/system";
 import { Button, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useSelector, useDispatch } from "react-redux";
+import { baseUrl } from "./Layout";
 import TextField from "@mui/material/TextField";
 import { useNavigate } from "react-router-dom";
 import { selectUser, setUser } from "../../../Global/GlobalSlice";
@@ -12,8 +13,9 @@ function sleep(ms) {
 }
 
 export async function get(User, Secret) {
+  const Url = useContext(baseUrl);
   try {
-    const response = await fetch("http://localhost:9000/MFAPI/MFAQR", {
+    const response = await fetch(`${Url}/MFAPI/MFAQR`, {
       method: "POST",
       cache: "no-cache",
       headers: {
@@ -50,7 +52,7 @@ function F2A() {
     if (OTP.length === 6) {
       axios({
         method: "POST",
-        url: "http://localhost:9000/MFAPI/verify",
+        url: `${Url}/MFAPI/verify`,
         data: {
           Token: OTP,
           Secret: User.Token,
@@ -59,7 +61,7 @@ function F2A() {
         if (response.data.message === true) {
           axios({
             method: "POST",
-            url: "http://localhost:9000/userAPI/connect",
+            url: `${Url}/userAPI/connect`,
             data: {
               _id: User._id,
             },

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Box } from "@mui/system";
+import { baseUrl } from "../Layout";
 import TextField from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
 import { Button, Tooltip, Typography } from "@mui/material";
@@ -35,6 +36,7 @@ function formatAMPM(date) {
   return strTime;
 }
 export default function Add() {
+  const Url = useContext(baseUrl);
   const Navigate = useNavigate();
   const Dispatch = useDispatch();
   const Theme = useTheme();
@@ -70,7 +72,7 @@ export default function Add() {
     if (Title !== "" && SubTitle !== "") {
       axios({
         method: "POST",
-        url: "http://localhost:9000/UserAPI/diary",
+        url: `${Url}/UserAPI/diary`,
         data: {
           __id: User._id,
           Title: Title,
