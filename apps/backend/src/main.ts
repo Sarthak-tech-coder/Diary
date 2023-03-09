@@ -20,7 +20,7 @@ app.use("/MFAPI", MFARouter)
 app.use("/UserAPI", UserRouter)
 
 app.get('/api', (req, res) => {
-  res.send({ message: 'Welcome to backend!' });
+  res.status(200).send({ message: 'Welcome to backend!' });
 });
 
 mongoose.set('strictQuery', false)
