@@ -12,7 +12,9 @@ const port = process.env.PORT || 3333;
 app.use(cors());
 app.use(express.json())
 app.use(bodyParser.json())
-
+app.use(express.json({
+  type: ['application/json', 'text/plain']
+}))
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use("/MFAPI", MFARouter)
 app.use("/UserAPI", UserRouter)
@@ -25,7 +27,7 @@ mongoose.set('strictQuery', false)
 
 mongoose.connect(process.env.MONGOOSE_CONNECTION_STRING).then(() => {
   app.listen(port, () => {
-    console.log("\x1b[32m", "\x1b[1m", `Listening at http://localhost:${port}/api, connected successfully to database`);
+    console.log(`Listening at http://localhost:${port}/api, connected successfully to database`);
   }).on('error', console.error);
 }).catch(() => {
   console.log("Connection failed, server terminated")

@@ -8,9 +8,11 @@ export interface UserInterface extends Document {
     Password: string,
     Auth: string,
     isConnected: boolean,
+    Token: string,
     Diaries: [
         type: unknown
-    ]
+    ],
+    verified: boolean,
 }
 interface UserInterfaceMethods {
     ReturnAllDATA(): object,
@@ -42,12 +44,19 @@ const UserSchema = new Schema<UserInterface, UserInterfaceModel>({
         default: "user",
         enum: ["user", "admin"]
     },
+    Token: {
+        type: "String",
+    },
     Diaries: [
         {
             type: Schema.Types.ObjectId,
             ref: "Diary"
         }
-    ]
+    ],
+    verified: {
+        type: "Boolean",
+        default: false
+    }
 })
 UserSchema.statics.findAllUsers = function () {
     return this.find()

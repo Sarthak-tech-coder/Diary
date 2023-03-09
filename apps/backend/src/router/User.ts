@@ -5,29 +5,32 @@ import { ChatSchema } from "../schemas/Chats"
 import { Firestore } from "../../firebase"
 import { getDocs, Timestamp, addDoc, updateDoc, collection, setDoc, doc } from "@firebase/firestore";
 import { query, orderBy, limit } from "firebase/firestore";
+import { authenticator } from 'otplib';
 
-//import uniqueString from 'unique-string';
 const router = Router()
 router.get("/", (req, res) => {
     res.json({ "message": "userAPI" })
 })
-router.all("/register", async (req, res) => {
-    const { Name, Password, Email } = req.query || req.body
+router.post("/register", async (req, res) => {
+    const secret = authenticator.generateSecret();
+    const { Name, Password, Email } = req.body
     if (!Name || !Password || !Email) return res.status(400).json({ message: "failed" })
     const User = new userSchema({
         Name: Name,
         Password: Password,
         Email: Email,
+        Token: secret
     })
     User.save().then(() => {
         res.status(201).json({
             success: true,
-            messgae: "Account registered successfully"
+            message: "Account registered successfully",
+            data: User
         })
     }).catch(() => {
         res.status(500).json({
             success: false,
-            messgae: "registration failed successfully"
+            message: "registration failed successfully, Email Already Exists"
         })
         console.log(" x1b[31m", "failed")
     })
@@ -88,9 +91,7 @@ router.post("/diary", async (req, res) => {
         }
         result.Diaries.push(diary._id)
         await result.save()
-        console.log(result)
         result.populate("Diaries").then((result) => {
-            console.log(result)
             res.status(200).json({
                 data: result
             })
@@ -148,7 +149,6 @@ router.post('/login', async (req, res) => {
     if (!Email || !Password) return res.status(400).json({ status: "failed" })
     userSchema.find({ Email: Email }).then((user) => {
         if (user.length == 0) return res.status(404).json({ status: "Failed" })
-        console.log(Password, user[0].Password, user)
         if (user[0].Password === Password) {
             user[0].populate("Diaries").then((user) => {
                 console.log("Authenticated")
@@ -165,19 +165,36 @@ router.delete("/diary", async (req, res) => {
     DiarySchema.findByIdAndDelete(_id).then((result) => {
         userSchema.findById(result.User).then((result) => {
             // @ts-ignore
-            result.Diaries = result.Diaries.filter(d => d != _id)
+            result.Diaries = result.Diaries.filter(d => d._id != _id)
+            result.save()
             result.populate("Diaries").then((result) => {
                 res.status(200).json({ status: "success", data: result })
             })
         })
     })
 })
-router.post("connect", (req, res) => {
+router.post("/connect", (req, res) => {
     const { _id } = req.body
+    console.log(_id, req.body)
     if (!_id) return res.status(400).json({ status: "failed" })
     userSchema.findById(_id).then((result) => {
         result.isConnected = true
         result.save()
+        res.json({ status: "success", data: result })
+    })
+})
+router.post("/UpdateDiary", (req, res) => {
+    const { id, diary } = req.body
+    if (!id || !diary) return res.status(400).json({ status: "failed" })
+    console.log(id, req.body)
+    DiarySchema.findByIdAndUpdate(id, { $set: { Title: diary.Title, SubTitle: diary.SubTitle, Content: diary.Content } }).then((result) => {
+        userSchema.findById(result.User).then((result) => {
+            result.populate("Diaries").then((result) => {
+                res.status(200).send({
+                    data: result
+                })
+            })
+        })
     })
 })
 export { router as UserRouter }

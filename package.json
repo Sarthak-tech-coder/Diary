@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-  "build":"nx build front-end",
-    "start":"nx serve front-end"
+    "dev": "nx serve front-end",
+    "Backend": "nx serve backend"
   },
   "private": true,
   "dependencies": {
@@ -20,6 +20,7 @@
     "axios": "^1.3.3",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.1",
+    "check-password-strength": "^2.0.7",
     "cors": "^2.8.5",
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",

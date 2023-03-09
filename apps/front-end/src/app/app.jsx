@@ -15,7 +15,8 @@ import Edit from "./components/Diary/Edit";
 import { Navigate } from "react-router-dom";
 import Login from "./components/Login/Login";
 import Password from "./components/Diary/Password";
-
+import F2A from "./components/F2A";
+import SignUp from "./components/Login/SignUp";
 const ProtectedRoute = ({ children }) => {
   const user = useSelector(selectAuth);
   console.log("Navigate Attempt");
@@ -29,7 +30,6 @@ const ProtectedRoute = ({ children }) => {
 export function App() {
   const mode = useSelector((state) => state.Global.mode);
   const theme = useMemo(() => createTheme(ThemeSettings(mode)), [mode]);
-  console.log(theme);
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
@@ -37,12 +37,16 @@ export function App() {
         <ProSidebarProvider>
           <Routes>
             <Route element={<Layout />}>
-              <Route path="Login" element={<Login />} />
+              <Route path="/" element={<Navigate to={"/home"} />}></Route>
+              <Route path="/home" element={<Home />}></Route>
+              <Route path="/Login" element={<Login />} />
+              <Route path="/SignUp" element={<SignUp />} />
+              <Route path="/f2a" element={<F2A />} />
               <Route path="/mydiary" element={<Home />}>
                 <Route path="/mydiary/All" element={<Main />}></Route>
                 <Route path="/mydiary/Password" element={<Password />}></Route>
                 <Route path="/mydiary/View/" element={<View />}></Route>
-                <Route path="/mydiary/Edit/:id" element={<Edit />}></Route>
+                <Route path="/mydiary/Edit/" element={<Edit />}></Route>
                 <Route path="/mydiary/add" element={<Add />}></Route>
               </Route>
               <Route path="*"></Route>

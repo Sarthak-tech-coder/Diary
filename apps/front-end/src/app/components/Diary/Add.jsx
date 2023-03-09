@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
-import { Button, Typography } from "@mui/material";
+import { Button, Tooltip, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
@@ -264,21 +264,30 @@ export default function Add() {
             flexDirection: "row !important",
           }}
         >
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={Protected}
-                onChange={handleProtected}
-                sx={{
-                  color: Theme.palette.secondary["main"],
-                  "&.Mui-checked": {
-                    color: Theme.palette.Text.Title,
-                  },
-                }}
-              />
+          <Tooltip
+            title={
+              !User.isConnected === true
+                ? "F2A is required for the feature."
+                : "Password protect this diary"
             }
-            label="Protected"
-          />
+          >
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={Protected}
+                  onChange={handleProtected}
+                  disabled={!User.isConnected}
+                  sx={{
+                    color: Theme.palette.secondary["main"],
+                    "&.Mui-checked": {
+                      color: Theme.palette.Text.Title,
+                    },
+                  }}
+                />
+              }
+              label="Protected"
+            />
+          </Tooltip>
           <FormControlLabel
             control={
               <Checkbox

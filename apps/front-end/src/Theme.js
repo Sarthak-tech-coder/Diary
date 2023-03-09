@@ -53,7 +53,7 @@ export const ThemeSettings = (mode) => {
                     Text: {
                         "main": "#FFFFFF",
                         "other": "#00FFCB",
-                        "Title": "#C500FF",
+                        "Title": "#f505e5",
                         "Sdd": "#000000",
                     },
                     support: {

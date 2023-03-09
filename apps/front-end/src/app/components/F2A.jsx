@@ -2,19 +2,50 @@ import React, { useState, useEffect } from "react";
 import { Box } from "@mui/system";
 import { Button, Typography } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import TextField from "@mui/material/TextField";
-import { useNavigate, useLocation } from "react-router-dom";
-import { selectUser } from "../../../../Global/GlobalSlice";
+import { useNavigate } from "react-router-dom";
+import { selectUser, setUser } from "../../../Global/GlobalSlice";
 import axios from "axios";
-export default function Password() {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function get(User, Secret) {
+  try {
+    const response = await fetch("http://localhost:9000/MFAPI/MFAQR", {
+      method: "POST",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        User: User.Name,
+        Secret: Secret,
+      }),
+    });
+    const blob = await response.blob();
+    console.log(response);
+    return [URL.createObjectURL(blob), null];
+  } catch (error) {
+    console.error(`get: error occurred ${error}`);
+    return [null, error];
+  }
+}
+
+function F2A() {
+  const [screenShot, setScreenshot] = useState(undefined);
   const Navigate = useNavigate();
+  const Dispatch = useDispatch();
   const User = useSelector(selectUser);
   const Secret = User.Token;
-  let location = useLocation();
   const Theme = useTheme();
-  const id = location.state.id;
   const [OTP, setOTP] = useState("");
+  function navigate() {
+    sleep(3000).then(() => {
+      Navigate("/home");
+    });
+  }
   const HandleSubmit = () => {
     if (OTP.length === 6) {
       axios({
@@ -26,14 +57,38 @@ export default function Password() {
         },
       }).then((response) => {
         if (response.data.message === true) {
-          Navigate(`/mydiary/view/`, { state: { id: id } });
+          axios({
+            method: "POST",
+            url: "http://localhost:9000/userAPI/connect",
+            data: {
+              _id: User._id,
+            },
+          }).then((response) => {
+            Dispatch(setUser(response.data.data));
+            Navigate(`/mydiary/view/`, { state: { id: id } });
+          });
         }
       });
+    } else {
+      console.log("no");
     }
   };
   const handleChange = (e) => {
     setOTP(e.target.value);
   };
+  useEffect(() => {
+    async function fetchData() {
+      const [response, error] = await get(User, Secret);
+      if (error) {
+        console.log(error);
+      } else {
+        console.log(response);
+        console.log(`got response ${response}`);
+        setScreenshot(response);
+      }
+    }
+    fetchData();
+  }, []);
   return (
     <Box
       sx={{
@@ -51,40 +106,11 @@ export default function Password() {
             display="flex"
             justifyContent="center"
             marginBottom="30px"
-            marginTop="200px"
+            marginTop="100px"
           >
-            This is a protected Diary OTP is Required
+            F2A is Already enabled
           </Typography>
-          <Box
-            sx={{
-              width: "90%",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <TextField
-              label="OTP"
-              variant="filled"
-              fullWidth
-              color="color"
-              type="Password"
-              value={OTP}
-              onChange={handleChange}
-              sx={{
-                marginBottom: "15px",
-              }}
-            />
-            <Button
-              variant="contained"
-              sx={{
-                color: Theme.palette.support.save,
-                background: Theme.palette.support.shade,
-              }}
-              onClick={() => HandleSubmit()}
-            >
-              Validate
-            </Button>
-          </Box>
+          {navigate()}
         </>
       ) : (
         <>
@@ -95,7 +121,7 @@ export default function Password() {
             marginBottom="30px"
             marginTop="100px"
           >
-            Password Protection Is Not Set Up
+            Scan thie QrCode By an Authenticator
           </Typography>
           <Typography
             variant="h1"
@@ -103,7 +129,7 @@ export default function Password() {
             justifyContent="center"
             marginBottom="30px"
           >
-            Scan This QRcode By an Authenticator
+            And Validate Code to Enabled F2A
           </Typography>
           <img
             src={screenShot}
@@ -140,3 +166,5 @@ export default function Password() {
     </Box>
   );
 }
+
+export default F2A;
