@@ -5,7 +5,11 @@ import { useTheme } from "@mui/material/styles";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { selectDiarie, setUser } from "../../../../Global/GlobalSlice";
+import {
+  selectDiarie,
+  setUser,
+  setLoading,
+} from "../../../../Global/GlobalSlice";
 import axios from "axios";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -44,6 +48,8 @@ export default function Edit() {
     Navigate(`/mydiary/view/`, { state: { id: id } });
   };
   const handleClick = (e) => {
+    useDispatch(setLoading(true));
+
     if (
       Diary.Title === Title &&
       Diary.SubTitle === SubTitle &&
@@ -66,9 +72,13 @@ export default function Edit() {
         .then((response) => {
           delete response.data.data.Password;
           Dispatch(setUser(response.data.data));
+          useDispatch(setLoading(false));
+
           Navigate(`/mydiary/view/`, { state: { id: id } });
         })
         .catch((error) => {
+          useDispatch(setLoading(false));
+
           console.error(error);
         });
     }

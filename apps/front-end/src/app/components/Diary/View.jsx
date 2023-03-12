@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button, Typography } from "@mui/material";
-import { selectDiarie } from "../../../../Global/GlobalSlice";
+import { selectDiarie, setLoading } from "../../../../Global/GlobalSlice";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { baseUrl } from "../Layout";
@@ -31,6 +31,7 @@ export default function View() {
     setOpen(false);
   };
   const handleDelete = () => {
+    Dispatch(setLoading(true));
     axios({
       method: "DELETE",
       url: `${Url}/UserApi/diary`,
@@ -40,7 +41,7 @@ export default function View() {
     }).then((response) => {
       Dispatch(setUser(response.data.data));
     });
-    setOpen(false);
+    Dispatch(setLoading(false));
     Navigate("/mydiary/all");
   };
   return (

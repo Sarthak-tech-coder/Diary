@@ -62,7 +62,7 @@ export default function ListItem({
                 isImportant === true
                   ? Theme.palette.Text.other
                   : Theme.palette.Text.main,
-              opacity: 0.8,
+              opacity: process.env.NODE_ENV === "production" ? 0.8 : "",
             }}
           >
             {SubTitle}
@@ -75,7 +75,7 @@ export default function ListItem({
                 isImportant === true
                   ? Theme.palette.Text.other
                   : Theme.palette.Text.main,
-              opacity: 0.8,
+              opacity: process.env.NODE_ENV === "production" ? 0.8 : "",
             }}
           >
             {Date}
@@ -86,7 +86,6 @@ export default function ListItem({
                 isImportant === true
                   ? Theme.palette.Text.other
                   : Theme.palette.Text.main,
-              opacity: 0.8,
             }}
           >
             {isProtected === true ? "Protected" : ""}

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { baseUrl } from "../Layout";
+import { baseUrl, collapsedContext } from "../Layout";
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
@@ -11,9 +11,15 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { setUser, ChangeAuthStatus } from "../../../../Global/GlobalSlice";
+import {
+  setUser,
+  ChangeAuthStatus,
+  setLoading,
+} from "../../../../Global/GlobalSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -59,12 +65,10 @@ function SignUp() {
     setUserName(e.target.value);
     setUsernameLengthError(false);
   };
-  const [open, setOpen] = React.useState(false);
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const [open, setopen] = React.useState(false);
 
   const handleclick = () => {
+    useDispatch(setLoading(true));
     var validRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
     if (Email === undefined || !Email.match(validRegex) || Email === "") {
       setEmailError(true);
@@ -84,6 +88,7 @@ function SignUp() {
       setPasswordError(true);
     } else {
       setPasswordError(false);
+
       if (passwordStrength(Password).id <= 1) {
         setStrengthError(true);
       } else {
@@ -101,9 +106,8 @@ function SignUp() {
       Email === "" ||
       RepeatPassword === ""
     ) {
-      return false;
+      useDispatch(setLoading(false));
     } else {
-      console.log("requesting");
       const request = axios({
         method: "POST",
         url: `${Url}/userAPI/register`,
@@ -115,14 +119,13 @@ function SignUp() {
       });
       request
         .then((res) => {
-          console.log(res);
           Dispatch(setUser(res.data.data));
           Dispatch(ChangeAuthStatus());
           Navigate("/mydiary/all");
+          useDispatch(setLoading(false));
         })
-        .catch((error) => {
-          console.log(error);
-          setOpen(true);
+        .catch((err) => {
+          setopen(true);
         });
     }
   };
@@ -243,7 +246,7 @@ function SignUp() {
         <DialogTitle id="alert-dialog-title">{"Login Failed"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Login failed, try again with a different Email address
+            Sign up failed, try again with a different Email address
           </DialogContentText>
         </DialogContent>
         <DialogActions>

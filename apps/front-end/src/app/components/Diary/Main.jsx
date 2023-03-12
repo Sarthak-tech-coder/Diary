@@ -44,6 +44,10 @@ export default function Main() {
           paddingRight: "20px",
           height: "90%",
           backgroundColor: Theme.palette.support.container,
+          boxShadow:
+            Theme.palette.mode === "light"
+              ? "1px 1px 20px azure"
+              : "1px 1px 20px darkslategrey",
           overflow: "auto",
           "::-webkit-scrollbar": {
             width: "25px",

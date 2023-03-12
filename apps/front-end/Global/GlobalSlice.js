@@ -6,7 +6,8 @@ const initial_State = {
     user: {
         Diaries: [],
     },
-    active: ""
+    active: "",
+    Loading: false
 }
 
 const GlobalSlice = createSlice({
@@ -28,6 +29,9 @@ const GlobalSlice = createSlice({
         },
         setUser: (state, action) => {
             state.user = action.payload
+        },
+        setLoading: (state, action) => {
+            state.Loading = action.payload
         }
     }
 })
@@ -49,5 +53,8 @@ export const selectDiaries = (state) => {
 export const selectDiarie = (id) => (state) => {
     return state.Global.user.Diaries.filter(d => d._id === id)
 }
+export const selectLoading = (state) => {
+    return state.Global.Loading
+}
 export const GlobalReducer = GlobalSlice.reducer
-export const { ToggleMode, ChangeAuthStatus, changeActive, setUser } = GlobalSlice.actions
+export const { ToggleMode, ChangeAuthStatus, changeActive, setUser, setLoading } = GlobalSlice.actions
